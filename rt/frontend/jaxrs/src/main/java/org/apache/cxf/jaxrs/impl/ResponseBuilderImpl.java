@@ -41,6 +41,7 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Variant;
 
+import org.apache.cxf.jaxrs.nio.NioWriteEntity;
 import org.apache.cxf.message.Message;
 import org.apache.cxf.phase.PhaseInterceptorChain;
 
@@ -318,14 +319,14 @@ public class ResponseBuilderImpl extends ResponseBuilder implements Cloneable {
     }
 
     @Override
-    public ResponseBuilder entity(NioWriterHandler arg0) {
-        // TODO: Not Implemented
-        return this;
+    public ResponseBuilder entity(NioWriterHandler writer) {
+        return entity(writer, (throwable) -> {  
+        });
     }
 
     @Override
-    public ResponseBuilder entity(NioWriterHandler arg0, NioErrorHandler arg1) {
-        // TODO: Not Implemented
+    public ResponseBuilder entity(NioWriterHandler writer, NioErrorHandler error) {
+        this.entity = new NioWriteEntity(writer, error);
         return this;
     }
 }

@@ -752,11 +752,16 @@ public abstract class AbstractHTTPDestination
         }
     }
 
+    public interface WrappingOutputStream {
+        OutputStream getWrappingOutputStream() throws IOException;
+    }
+    
     /**
      * Wrapper stream responsible for flushing headers and committing outgoing
      * HTTP-level response.
      */
-    private class WrappedOutputStream extends AbstractWrappedOutputStream implements CopyingOutputStream {
+    private class WrappedOutputStream extends AbstractWrappedOutputStream 
+            implements CopyingOutputStream, WrappingOutputStream {
 
         private Message outMessage;
         
@@ -787,6 +792,20 @@ public abstract class AbstractHTTPDestination
             if (null != responseStream) {
                 wrappedStream = responseStream;
             }
+        }
+        
+        @Override
+        public OutputStream getWrappingOutputStream() throws IOException {
+            if (wrappedStream != null) {
+                return wrappedStream;
+            } else {
+                final HttpServletResponse response = getHttpResponseFromMessage(outMessage);
+                if (response != null) {
+                    return response.getOutputStream();
+                }
+            } 
+            
+            return null;
         }
 
         /**
@@ -915,7 +934,7 @@ public abstract class AbstractHTTPDestination
     public HTTPServerPolicy getServer() {
         return calcServerPolicy(null);
     }
-
+    
     public void setServer(HTTPServerPolicy server) {
         this.serverPolicy = server;
         if (server != null) {

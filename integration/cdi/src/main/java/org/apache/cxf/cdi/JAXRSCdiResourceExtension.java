@@ -344,7 +344,7 @@ public class JAXRSCdiResourceExtension implements Extension {
                 (JAXRSServerFactoryCustomizationExtension)beanManager.getReference(
                     extensionBean, 
                     extensionBean.getBeanClass(), 
-                    beanManager.createCreationalContext(extensionBean) 
+                    createCreationalContext(beanManager, extensionBean) 
                 );
             extension.customize(bean);
         }
